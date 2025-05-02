@@ -136,7 +136,7 @@ void limitFps(Game* game) {
 }
 
 void cleanScreen() {
-    system("clear");
+    (void)system("clear");
 }
 
 void drawHeader(Game *game) {
