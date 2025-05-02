@@ -14,6 +14,10 @@
 #define WIDTH 100
 #define HEIGTH 25
 
+//typedef struct {
+//    uint64_t points;
+//} UI;
+
 typedef struct{
     Vect2 positon;
     Vect2 size;

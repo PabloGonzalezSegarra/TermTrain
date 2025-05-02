@@ -14,9 +14,13 @@
 #include "ansi.h"
 #include "term.h"
 
-// TODO -
+// TODO - Ir actualizando la función conforme vaya avanzando
+//      - La estrategia va a ser ir renderizando la imagen
+//      - por orden. Lo que se dibujo primero queda detrás.
+//      - El player por encima de todo, por ejemplo.
 void drawScreen(Game* game,  bool debug);
 void drawHeader(Game* game);
+
 // TODO - Update ahora es publica, se encarga de todo
 //        Deben haber varias privadas que hagan:
 //          - Update Screen
@@ -25,12 +29,37 @@ void drawHeader(Game* game);
 //          - Update Decorators
 //          - Update Collisions
 //          - Update UI (Quizas no haga falta, quizás si)
-void updateScreen(Game* game);
+
+/**
+ * @brief Updates core info, such as frame rate, terminal size, etc.
+ */
+void updateCoreInfo(Game* game);
+
+/**
+ * @brief Updates player info, such as position, speed, etc.
+ */
 void updatePlayer(Game* game);
-void updateEnemies(Game* game);
-void updateDecorators(Game* game);
-void updateCollisions(Game* game);
-void updateUI(Game* game);
+
+/**
+ * @brief Updates enemies info, such as position, speed, etc.
+ */
+//void updateEnemies(Game* game);
+
+/**
+ * @brief Updates decorators info, such as position, speed, etc.
+ */
+//void updateDecorators(Game* game);
+
+/**
+ * @brief Updates collisions, this will probabli need more elaboration
+ */
+//void updateCollisions(Game* game);
+
+/**
+ * @brief Updates UI info, such as current score. Maybe not needed.
+ */
+//void updateUI(Game* game);
+
 void limitFps(Game* game);
 void cleanScreen();
 
@@ -44,7 +73,7 @@ void createGame(Game* game) {
     game->fpsTarget = UINT32_MAX;
 
     game->lastFrameTime = getCurrentMicroseconds();
-    updateScreen(game);
+    updateCoreInfo(game);
 
     game->created = true;
 }
@@ -78,7 +107,7 @@ bool update(Game* game, bool debug) {
         return false;
     }
 
-    updateScreen(game);
+    updateCoreInfo(game);
     limitFps(game);
 
     drawScreen(game, debug);
@@ -120,7 +149,7 @@ void drawScreen(Game* game, bool debug) {
 }
 
 
-void updateScreen(Game* game) {
+void updateCoreInfo(Game* game) {
     game->deltaTime = (getCurrentMicroseconds() - game->lastFrameTime) / 1000000.0f;
     game->lastFrameTime = getCurrentMicroseconds();
 
