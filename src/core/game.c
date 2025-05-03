@@ -15,21 +15,8 @@
 #include "time.h"
 #include "ansi.h"
 
-// TODO - Ir actualizando la función conforme vaya avanzando
-//      - La estrategia va a ser ir renderizando la imagen
-//      - por orden. Lo que se dibujo primero queda detrás.
-//      - El player por encima de todo, por ejemplo.
 void drawScreen(Game* game);
 void drawHeader(Game* game);
-
-// TODO - Update ahora es publica, se encarga de todo
-//        Deben haber varias privadas que hagan:
-//          - Update Screen
-//          - Update Player
-//          - Update Enemies
-//          - Update Decorators
-//          - Update Collisions
-//          - Update UI (Quizás no haga falta, quizás si)
 
 /**
  * @brief Updates core info, such as frame rate, terminal size, etc.
@@ -59,7 +46,7 @@ void updatePlayer(Game* game);
 /**
  * @brief Updates UI info, such as current score. Maybe not needed.
  */
-//void updateUI(Game* game);
+void updateUI(Game* game);
 
 /**
  * @brief Updates draw buffer, making it ready for next draw
@@ -88,12 +75,14 @@ void createGame(Game* game) {
 
     game->created = true;
 
-    game->player.jumpAvailable = true;
+    game->player.jumpAvailable = false;
     game->player.jumpSpeed = 40;
     game->player.position = (Vect2){4 ,0 };
     game->player.speed = (Vect2){0 ,0 };
     game->player.size = (Vect2){0 ,0 };
 
+    game->ui.score = 0;
+    game->ui.scoreMultiplier = 1.f;
     cleanBuffer(game);
 }
 
@@ -123,13 +112,16 @@ bool update(Game* game) {
     updateCoreInfo(game);
 
     // Game logic
+
     if (isKeyPressed(&game->input, 'q')) {
         return false;
     }
 
     updatePlayer(game);
 
-    // Draw related stuff
+    updateUI(game);
+
+    // Draw
     updateBuffer(game);
     drawScreen(game);
     return true;
@@ -152,13 +144,6 @@ void disableDebug(Game *game) {
 }
 
 void setPlayerTexture(Game* game, char** texture, Vect2 size) {
-
-    /*game->player.texture = (char**)malloc(sizeof(char*)*size.y);
-    for (uint32_t i = 0; i < size.y; i++) {
-        game->player.texture[i] = (char*)malloc(sizeof(char)*size.x);
-        memcpy(game->player.texture[i], texture[i], size.x);
-    }*/
-
     game->player.texture = texture;
     game->player.size = size;
 }
@@ -227,6 +212,13 @@ void updatePlayer(Game* game) {
     }
 }
 
+void updateUI(Game* game) {
+    const double deltaTime = getDeltaTime(game);
+    game->ui.score += (deltaTime * BASE_SCORE) * game->ui.scoreMultiplier;
+
+    game->ui.scoreMultiplier += BASE_MULTIPLIER * deltaTime;
+}
+
 void updateBuffer(Game* game) {
     cleanBuffer(game);
 
@@ -261,9 +253,14 @@ bool pixelInScreen(Vect2 pixelPos) {
 
 
 void limitFps(Game* game) {
-    (void) game;
-    uint64_t basicSleepTime = 1000000 / FRAME_RATE;
-    usleep(basicSleepTime);
+    const uint64_t basicSleepTime = 1000000 / FRAME_RATE;
+    const uint64_t deltaTime = getDeltaTime(game) * 1000000;
+
+    uint64_t offset = 0;
+    if (deltaTime > basicSleepTime) {
+        offset = deltaTime - basicSleepTime;
+    }
+    usleep(basicSleepTime - offset);
 }
 
 void cleanScreen() {
@@ -274,14 +271,14 @@ void drawHeader(Game *game) {
 
 
     setColor(ANSI_B_PINK);
-    printf("\n\tScore: %d\n", 10);
+    printf("\n\tScore: %ld\n", (uint64_t)game->ui.score);
     resetColor();
 
     uint32_t separatorNum = WIDTH <= game->size.x ? WIDTH : game->size.x;
 
     if (game->debug) {
         setColor(ANSI_CYAN);
-        printf("\tWidth: %d | HEIGHT: %d | FrameTime: %fs | Player pos: {%d, %d} | Jump: %d\n", game->size.x, game->size.y, getDeltaTime(game), game->player.position.x, game->player.position.y, game->player.jumpAvailable);
+        printf("\tWidth: %d | HEIGHT: %d | Frame{rate, time}: {%f, %fs} | Player pos: {%d, %d} | Jump: %d\n | {Score, mult}: {%f, %f}\n", game->size.x, game->size.y, 1./getDeltaTime(game), getDeltaTime(game), game->player.position.x, game->player.position.y, game->player.jumpAvailable, game->ui.score, game->ui.scoreMultiplier);
         resetColor();
     }else {
         printf("\n");

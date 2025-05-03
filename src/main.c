@@ -1,5 +1,4 @@
 #include "core/game.h"
-#include "core/input.h"
 #include "core/math.h"
 #include <stdlib.h>
 #include <unistd.h>
@@ -24,7 +23,7 @@ int main(int argc, char** argv){
 
     setPlayerTexture(&game, text, playerSize);
 
-    //enableDebug(&game);
+    enableDebug(&game);
 
     while (update(&game)) {}
 

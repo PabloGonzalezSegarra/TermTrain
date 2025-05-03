@@ -9,7 +9,7 @@
 
 #define HEADER_HEIGHT ((uint32_t)4)
 #define HEADER_SEPARATOR "_"
-#define FRAME_RATE ((uint32_t)20)
+#define FRAME_RATE ((uint32_t)25)
 
 #define WIDTH (int32_t)(100)
 #define HEIGHT (int32_t)(25)
@@ -21,9 +21,13 @@
 
 #define GROUND_LEVEL (BUFFER_HEIGHT - 2)
 
-//typedef struct {
-//    uint64_t points;
-//} UI;
+#define BASE_SCORE (4)
+#define BASE_MULTIPLIER (0.01)
+
+typedef struct {
+    double score;
+    double scoreMultiplier;
+} UI;
 
 typedef struct {
     Vect2 size;
@@ -47,6 +51,7 @@ typedef struct {
     bool debug;
     char drawBuffer[HEIGHT - HEADER_HEIGHT][WIDTH];
 
+    UI ui;
     Object player;
 
     Input input;
