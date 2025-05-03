@@ -278,7 +278,7 @@ void drawHeader(Game *game) {
 
     if (game->debug) {
         setColor(ANSI_CYAN);
-        printf("\tWidth: %d | HEIGHT: %d | Frame{rate, time}: {%f, %fs} | Player pos: {%d, %d} | Jump: %d\n | {Score, mult}: {%f, %f}\n", game->size.x, game->size.y, 1./getDeltaTime(game), getDeltaTime(game), game->player.position.x, game->player.position.y, game->player.jumpAvailable, game->ui.score, game->ui.scoreMultiplier);
+        printf("\tWidth: %d | HEIGHT: %d | Frame{rate, time}: {%f, %fs} | Player pos: {%d, %d} | Jump: %d | {Score, mult}: {%f, %f}\n", game->size.x, game->size.y, 1./getDeltaTime(game), getDeltaTime(game), game->player.position.x, game->player.position.y, game->player.jumpAvailable, game->ui.score, game->ui.scoreMultiplier);
         resetColor();
     }else {
         printf("\n");
