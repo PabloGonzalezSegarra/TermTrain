@@ -5,6 +5,7 @@
 #define ANSI_GREEN "\e[0;32m"
 #define ANSI_YELLOW "\e[0;33m"
 #define ANSI_BLUE "\e[0;34m"
+#define ANSI_PINK "\e[38;5;219m"
 #define ANSI_MAGENTA "\e[0;35m"
 #define ANSI_CYAN "\e[0;36m"
 #define ANSI_WHITE "\e[0;37m"
@@ -15,6 +16,7 @@
 #define ANSI_B_GREEN "\e[1;32m"
 #define ANSI_B_YELLOW "\e[1;33m"
 #define ANSI_B_BLUE "\e[1;34m"
+#define ANSI_B_PINK "\e[1;38;5;219m"
 #define ANSI_B_MAGENTA "\e[1;35m"
 #define ANSI_B_CYAN "\e[1;36m"
 #define ANSI_B_WHITE "\e[1;37m"
@@ -39,7 +41,7 @@
 #define ANSI_BACK_CYAN "\e[46m"
 #define ANSI_BACK_WHITE "\e[47m"
 
-//High intensty background 
+//High intensity background
 #define ANSI_H_BACK_BLACK "\e[0;100m"
 #define ANSI_H_BACK_RED "\e[0;101m"
 #define ANSI_H_BACK_GREEN "\e[0;102m"
@@ -49,7 +51,7 @@
 #define ANSI_H_BACK_CYAN "\e[0;106m"
 #define ANSI_H_BACK_WHITE "\e[0;107m"
 
-//High intensty text
+//High intensity text
 #define ANSI_H_BLACK "\e[0;90m"
 #define ANSI_H_RED "\e[0;91m"
 #define ANSI_H_GREEN "\e[0;92m"
