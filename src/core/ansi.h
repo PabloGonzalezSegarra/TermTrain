@@ -1,3 +1,6 @@
+#ifndef TERM_TRAIN_ANSI_INCLUDE__
+#define TERM_TRAIN_ANSI_INCLUDE__
+
 //Regular text
 #include <stdio.h>
 #define ANSI_BLACK "\e[0;30m"
@@ -81,3 +84,5 @@ void setColor(char* color) {
 void resetColor() {
     printf("%s", ANSI_RESET);
 }
+
+#endif // TERM_TRAIN_ANSI_INCLUDE__
