@@ -1,4 +1,3 @@
-
 aux_source_directory("${CMAKE_CURRENT_LIST_DIR}/core/" CORE_SOURCES)
 
 aux_source_directory("${CMAKE_CURRENT_LIST_DIR}/core/" UTIL_SOURCES)
