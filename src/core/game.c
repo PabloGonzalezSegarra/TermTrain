@@ -10,6 +10,8 @@
 #include <termios.h>
 
 #include "game.h"
+#include "EntityHandler.h"
+#include "core.h"
 #include "input.h"
 #include "math.h"
 #include "time.h"
@@ -29,16 +31,6 @@ void updateCoreInfo(Game* game);
 void updatePlayer(Game* game);
 
 /**
- * @brief Updates enemies info, such as position, speed, etc.
- */
-//void updateEnemies(Game* game);
-
-/**
- * @brief Updates decorators info, such as position, speed, etc.
- */
-//void updateDecorators(Game* game);
-
-/**
  * @brief Updates collisions, this will probably need more elaboration
  */
 //void updateCollisions(Game* game);
@@ -53,8 +45,6 @@ void updateUI(Game* game);
  */
 void updateBuffer(Game* game);
 void cleanBuffer(Game* game);
-
-bool pixelInScreen(Vect2 pixelPos);
 
 void limitFps(Game* game);
 void cleanScreen();
@@ -83,7 +73,19 @@ void createGame(Game* game) {
 
     game->ui.score = 0;
     game->ui.scoreMultiplier = 1.f;
+
+    game->bufferSize = (Vect2){BUFFER_WIDTH, BUFFER_HEIGHT};
+    game->drawBuffer = malloc(game->bufferSize.y * sizeof(char*));
+    for (int32_t i = 0; i < game->bufferSize.y; i++) {
+        game->drawBuffer[i] = malloc(game->bufferSize.x * sizeof(char));
+    }
+
     cleanBuffer(game);
+
+    createEntityHandler(&game->enemies, (Vect2){WIDTH, GROUND_LEVEL}, (Vect2){10, 0}, 5000000);
+    createEntityHandler(&game->decorators, (Vect2){WIDTH, 5}, (Vect2){5, 0}, 1000000);
+
+
 }
 
 void deleteGame(Game* game) {
@@ -119,6 +121,9 @@ bool update(Game* game) {
 
     updatePlayer(game);
 
+    const double deltaTime = getDeltaTime(game);
+    handleUpdate(&game->enemies, deltaTime);
+    handleUpdate(&game->decorators, deltaTime);
     updateUI(game);
 
     // Draw
@@ -148,6 +153,13 @@ void setPlayerTexture(Game* game, char** texture, Vect2 size) {
     game->player.size = size;
 }
 
+void addEnemy(Game* game, char** texture, Vect2 size) {
+    addBlueprint(&game->enemies, texture, size);
+}
+
+void addDecorator(Game* game,  char** texture, Vect2 size){
+    addBlueprint(&game->enemies, texture, size);
+}
 // Private:
 
 void drawScreen(Game* game) {
@@ -161,8 +173,8 @@ void drawScreen(Game* game) {
     }
 
     setColor(ANSI_YELLOW);
-    for (uint32_t i = 0; i < BUFFER_HEIGHT; i++) {
-        for (uint32_t j = 0; j < BUFFER_WIDTH; j++) {
+    for (int32_t i = 0; i < game->bufferSize.y; i++) {
+        for (int32_t j = 0; j < game->bufferSize.x; j++) {
             printf("%c", game->drawBuffer[i][j]);
         }
         printf("\n");
@@ -171,7 +183,6 @@ void drawScreen(Game* game) {
 
     fflush(stdout);
 }
-
 
 void updateCoreInfo(Game* game) {
     processInput(&game->input);
@@ -197,16 +208,14 @@ void updatePlayer(Game* game) {
         player->jumpAvailable = false;
     }
 
-    //Vect2* playerSize =  &player->object.size;
     Vect2* playerPos = &player->position;
 
     double deltaTime = getDeltaTime(game);
 
     playerPos->y -= playerSpeed->y * deltaTime;
     playerSpeed->y -= GRAVITY * deltaTime;
-
     if (playerPos->y + player->size.y > GROUND_LEVEL) {
-        playerPos->y = GROUND_LEVEL;
+        playerPos->y = GROUND_LEVEL - player->size.y;
         playerSpeed->y = 0;
         player->jumpAvailable = true;
     }
@@ -223,34 +232,21 @@ void updateBuffer(Game* game) {
     cleanBuffer(game);
 
     Object* player = &game->player;
+    drawObject(player, (char**)game->drawBuffer, game->bufferSize);
 
-    for (int i = 0; i < player->size.y; i++) {
-        for (int j = 0; j < player->size.x; j++) {
-            Vect2 pixelPos = (Vect2) {
-                player->position.x + j,
-                player->position.y + i
-            };
-            if (pixelInScreen(pixelPos)) {
-                game->drawBuffer[pixelPos.y][pixelPos.x] = player->texture[i][j];
-            }
-        }
-    }
+
+    drawEntities(&game->enemies, game->drawBuffer, game->bufferSize);
+    drawEntities(&game->decorators, game->drawBuffer, game->bufferSize);
 
     // TODO
     return;
 }
 
 void cleanBuffer(Game* game) {
-    for (uint32_t i = 0; i < BUFFER_HEIGHT; i++) {
-        memset(game->drawBuffer[i], ' ', BUFFER_WIDTH);
+    for (int32_t i = 0; i < game->bufferSize.y; i++) {
+        memset(game->drawBuffer[i], ' ', game->bufferSize.x);
     }
 }
-
-bool pixelInScreen(Vect2 pixelPos) {
-    return pixelPos.y >= 0 && pixelPos.y < BUFFER_HEIGHT &&
-           pixelPos.x >= 0 && pixelPos.x < BUFFER_WIDTH;
-}
-
 
 void limitFps(Game* game) {
     const uint64_t basicSleepTime = 1000000 / FRAME_RATE;
@@ -268,8 +264,6 @@ void cleanScreen() {
 }
 
 void drawHeader(Game *game) {
-
-
     setColor(ANSI_B_PINK);
     printf("\n\tScore: %ld\n", (uint64_t)game->ui.score);
     resetColor();

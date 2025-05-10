@@ -6,6 +6,8 @@
 #include <stdint.h>
 #include "math.h"
 #include "input.h"
+#include "EntityHandler.h"
+#include "core.h"
 
 #define HEADER_HEIGHT ((uint32_t)4)
 #define HEADER_SEPARATOR "_"
@@ -17,31 +19,13 @@
 #define BUFFER_WIDTH (int32_t)(WIDTH)
 #define BUFFER_HEIGHT (int32_t)(HEIGHT - HEADER_HEIGHT)
 
-#define GRAVITY 80
+#define GRAVITY 112
 
 #define GROUND_LEVEL (BUFFER_HEIGHT - 2)
 
 #define BASE_SCORE (4)
 #define BASE_MULTIPLIER (0.01)
 
-typedef struct {
-    double score;
-    double scoreMultiplier;
-} UI;
-
-typedef struct {
-    Vect2 size;
-    char** texture;
-} Texture;
-
-typedef struct oject_s{
-    Vect2 position;
-    Vect2 speed;
-    Vect2 size;
-    char** texture;
-    bool jumpAvailable;
-    uint32_t jumpSpeed;
-} Object;
 
 typedef struct {
     Vect2 size;
@@ -49,23 +33,16 @@ typedef struct {
     uint32_t fpsTarget;
     double deltaTime;
     bool debug;
-    char drawBuffer[HEIGHT - HEADER_HEIGHT][WIDTH];
+    char** drawBuffer;
+    Vect2 bufferSize;
 
     UI ui;
     Object player;
 
     Input input;
 
-// TODO - Seguramente hay que tener handlers
-    size_t numEnemies;
-    Object** enemies;
-    uint64_t enemiesPeriod_us;
-    uint64_t lastEnemyTime_us;
-
-    size_t numDecorators;
-    Object** decorators;
-    uint64_t decoratorsPeriod_us;
-    uint64_t lastDecoratorTime_us;
+    EntityHandler enemies;
+    EntityHandler decorators;
 
     bool created;
 } Game;
@@ -78,7 +55,8 @@ double getDeltaTime(Game* game);
 void enableDebug(Game* game);
 void disableDebug(Game* game);
 
-void setPlayerTexture(Game* game, char** texture, Vect2 size); // TODO
-void addEnemy(Game* game, Object* object); // TODO
-void addDecorator(Game* game, Object* object); // TODO
-#endif
+void setPlayerTexture(Game* game, char** texture, Vect2 size);
+void addEnemy(Game* game, char** texture, Vect2 size);
+void addDecorator(Game* game, char** texture, Vect2 size);
+
+#endif // TERM_TRAIN_SCREEN_INCLUDE__
