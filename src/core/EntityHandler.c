@@ -48,15 +48,26 @@ void spawnEntity(EntityHandler* handler) {
         return;
     }
 
-    Object* entity = handler->blueprints[rand() % handler->numBlueprints];
+    Object* blueprint = handler->blueprints[rand() % handler->numBlueprints];
+    Object* entity = malloc(sizeof(Object));
 
+    entity->position = blueprint->position;
+    entity->speed = blueprint->speed;
+    entity->size = blueprint->size;
     entity->position = handler->startPosition;
+    entity->position.y -= blueprint->size.y;
+    entity->texture = blueprint->texture;
 
     handler->activeEntities[handler->numActiveEntities] = entity;
     handler->numActiveEntities++;
 }
 
 void killEntity(EntityHandler* handler) {
+    if (handler->numActiveEntities <= 0) {
+        return;
+    }
+
+    free(handler->activeEntities[0]);
 
     for (uint32_t i = 0; i < MAX_ACTIVE_ENTITIES - 1; i++) {
         handler->activeEntities[i] = handler->activeEntities[i + 1];
