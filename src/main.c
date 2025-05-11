@@ -6,16 +6,27 @@
 #include <stdio.h>
 
 /**
-    1- Cada enemigo debe tener una altura ajusta a su tamaño
-    2- Altura configurable, alomejor setear si es volador o terrestre
-    3- Mecanismo que acelere el periodo de aparición de enemigos
-    4- Calcular colisiones y listo
+    1- Cada enemigo debe tener una altura ajusta a su tamaño ✅
+    4- Calcular colisiones y listo ✅
     5- Refactor y clean up
     6- Documentar y readme
 */
 
+/**
+    1- EntityHandler necesita un método free!
+    2- Hay que mejorar el sistema de entities en general:
+        a. Spawns en tiempo aleatorios
+        b. Ir reduciendo ligeramente el tiempo entre spawns
+        c. Permitir tener ajustes en los blueprints, como dificultad, volador etc
+    3- Hay que hacer un sistema que permita reiniciar el juego.
+    4- Hay que revisar las colisiones
+    5- Hay que provar los decoradores
+    6- Revisar el kill entity, se mueren demasiado pronto
+*/
+
 void setUpPlayer(Game* game);
 void setUpEnemies(Game* game);
+void setUpDecorators(Game* game);
 char** allocTexture(Vect2 size);
 
 int main(int argc, char** argv){
@@ -28,6 +39,7 @@ int main(int argc, char** argv){
 
     setUpPlayer(&game);
     setUpEnemies(&game);
+    setUpDecorators(&game);
     enableDebug(&game);
 
     while (update(&game)) {}
@@ -49,15 +61,28 @@ void setUpPlayer(Game* game) {
 }
 
 void setUpEnemies(Game* game) {
-    const Vect2 enemy1Size = (Vect2){4,3};
+    const Vect2 enemy1Size = (Vect2){6,3};
     char** enemy1Texture = allocTexture(enemy1Size);
 
     sprintf(enemy1Texture[0], "  ^  ");
     sprintf(enemy1Texture[1], " / \\ ");
-    sprintf(enemy1Texture[2], "/   \\ ");
+    sprintf(enemy1Texture[2], "/   \\");
 
     addEnemy(game, enemy1Texture,enemy1Size);
 }
+
+void setUpDecorators(Game* game) {
+    const Vect2 decorator1Size = (Vect2){13,4};
+    char** decorator1Texture = allocTexture(decorator1Size);
+
+    sprintf(decorator1Texture[0], "   __   _   ");
+    sprintf(decorator1Texture[1], " _(  )_( )_ ");
+    sprintf(decorator1Texture[2], "(_   _    _)");
+    sprintf(decorator1Texture[2], "  (_) (__)  ");
+
+    addDecorator(game, decorator1Texture,decorator1Size);
+}
+
 
 char** allocTexture(Vect2 size) {
     char ** text = (char**)malloc(sizeof(char*)*size.y);

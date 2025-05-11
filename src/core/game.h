@@ -45,6 +45,7 @@ typedef struct {
     EntityHandler decorators;
 
     bool created;
+    bool collided;
 } Game;
 
 void createGame(Game* game);

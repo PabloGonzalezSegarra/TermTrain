@@ -35,6 +35,7 @@ void addBlueprint(EntityHandler* handler, char** texture, Vect2 size) {
 
     Object* entity = malloc(sizeof(Object));
 
+    entity->position = handler->startPosition;
     entity->texture = texture;
     entity->size = size;
     entity->speed = handler->speed;

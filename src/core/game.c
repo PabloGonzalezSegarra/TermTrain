@@ -17,8 +17,9 @@
 #include "time.h"
 #include "ansi.h"
 
-void drawScreen(Game* game);
+void drawScreen(Game* game, bool header, char color[]);
 void drawHeader(Game* game);
+void drawEndScreen(Game* game);
 
 /**
  * @brief Updates core info, such as frame rate, terminal size, etc.
@@ -33,7 +34,7 @@ void updatePlayer(Game* game);
 /**
  * @brief Updates collisions, this will probably need more elaboration
  */
-//void updateCollisions(Game* game);
+void updateCollisions(Game* game);
 
 /**
  * @brief Updates UI info, such as current score. Maybe not needed.
@@ -56,6 +57,7 @@ void createGame(Game* game) {
     initTerm();
 
     game->debug = false;
+    game->collided = false;
 
     createInput(&game->input);
     game->fpsTarget = UINT32_MAX;
@@ -82,10 +84,8 @@ void createGame(Game* game) {
 
     cleanBuffer(game);
 
-    createEntityHandler(&game->enemies, (Vect2){WIDTH, GROUND_LEVEL}, (Vect2){10, 0}, 5000000);
-    createEntityHandler(&game->decorators, (Vect2){WIDTH, 5}, (Vect2){5, 0}, 1000000);
-
-
+    createEntityHandler(&game->enemies, (Vect2){WIDTH, GROUND_LEVEL}, (Vect2){10, 0}, 1000000);
+    createEntityHandler(&game->decorators, (Vect2){WIDTH, 4}, (Vect2){2, 0}, 2000000);
 }
 
 void deleteGame(Game* game) {
@@ -107,6 +107,14 @@ void setFpsTarget(Game* game, uint32_t target) {
 }
 
 bool update(Game* game) {
+    printf("Num dec blue: %d\n", game->decorators.numBlueprints);fflush(stdout);
+    printf("Num decorators: %d\n", game->decorators.numActiveEntities);fflush(stdout);
+    if (game->enemies.numActiveEntities > 0) {
+        printf("Speed: %d\n", game->enemies.activeEntities[0]->speed.x);fflush(stdout);
+    }
+    if (game->decorators.numActiveEntities > 0) {
+        printf("Speed: %d\n", game->decorators.activeEntities[0]->speed.x);fflush(stdout);
+    }
     if (!game->created) {
         return false;
     }
@@ -119,16 +127,26 @@ bool update(Game* game) {
         return false;
     }
 
+    if (game->collided) {
+        drawEndScreen(game);
+        drawScreen(game, false, ANSI_BH_RED);
+        return true;
+    }
+
     updatePlayer(game);
 
     const double deltaTime = getDeltaTime(game);
     handleUpdate(&game->enemies, deltaTime);
     handleUpdate(&game->decorators, deltaTime);
+
     updateUI(game);
+
+   // updateCollisions(game);
 
     // Draw
     updateBuffer(game);
-    drawScreen(game);
+    drawScreen(game, true, ANSI_YELLOW);
+
     return true;
 }
 
@@ -158,21 +176,27 @@ void addEnemy(Game* game, char** texture, Vect2 size) {
 }
 
 void addDecorator(Game* game,  char** texture, Vect2 size){
-    addBlueprint(&game->enemies, texture, size);
+    addBlueprint(&game->decorators, texture, size);
 }
 // Private:
 
-void drawScreen(Game* game) {
+void drawScreen(Game* game, bool header, char color[]) {
     cleanScreen();
 
-    drawHeader(game);
+    if (header) {
+        drawHeader(game);
+    }else {
+        for (uint32_t i = 0; i < HEADER_HEIGHT; i++) {
+            printf("\n");
+        }
+    }
 
     if (game->size.y < HEIGHT || game->size.x < WIDTH) {
         drawTermToSmallError();
         return;
     }
 
-    setColor(ANSI_YELLOW);
+    setColor(color);
     for (int32_t i = 0; i < game->bufferSize.y; i++) {
         for (int32_t j = 0; j < game->bufferSize.x; j++) {
             printf("%c", game->drawBuffer[i][j]);
@@ -218,6 +242,17 @@ void updatePlayer(Game* game) {
         playerPos->y = GROUND_LEVEL - player->size.y;
         playerSpeed->y = 0;
         player->jumpAvailable = true;
+    }
+}
+
+void updateCollisions(Game* game) {
+    Object* player = &game->player;
+
+    for (uint32_t i = 0; i < game->enemies.numActiveEntities; i++) {
+        if (areColliding(player, game->enemies.activeEntities[i])) {
+            game->collided = true;
+            return;
+        }
     }
 }
 
@@ -284,6 +319,40 @@ void drawHeader(Game *game) {
     }
     printf("\n");
     resetColor();
+}
+
+void drawEndScreen(Game* game) {
+    cleanBuffer(game);
+
+    const char *message[] = {
+        " _____                           ____                 ",
+        "|  __ \\                         / __ \\                ",
+        "| |  \\/ __ _ _ __ ___   ___    | |  | |_   _____ _ __ ",
+        "| | __ / _` | '_ ` _ \\ / _ \\   | |  | \\ \\ / / _ \\ '__|",
+        "| |_\\ \\ (_| | | | | | |  __/   | |__| |\\ V /  __/ |   ",
+        " \\____/\\__,_|_| |_| |_|\\___|    \\____/  \\_/ \\___|_|   "
+    };
+
+    Vect2 size = {strlen(message[0]),  sizeof(message) / sizeof(message[0])};
+    Vect2 pos = {(game->bufferSize.x - size.x) / 2,  game->bufferSize.y / 2 - size.y};
+
+    for (int i = 0; i < size.y; i++) {
+        strncpy(&game->drawBuffer[pos.y + i][pos.x], message[i], size.x);
+    }
+
+    char shortCutsInfo[] = "Press (q) to exit.";
+    Vect2 shortCutsSize = (Vect2){strlen(shortCutsInfo),  1};
+    Vect2 shortCutsPos = (Vect2){(game->bufferSize.x - shortCutsSize.x) / 2,  game->bufferSize.y / 2 + shortCutsSize.y};
+
+    strncpy(&game->drawBuffer[shortCutsPos.y + 1][shortCutsPos.x], shortCutsInfo, shortCutsSize.x);
+
+
+    char scoreBuffer[20];
+    sprintf(scoreBuffer, "Score: %ld", (long)game->ui.score);
+    Vect2 scoreSize = (Vect2){strlen(scoreBuffer),  1};
+    Vect2 scorePos = (Vect2){(game->bufferSize.x - scoreSize.x) / 2,  game->bufferSize.y / 2 + scoreSize.y + 3};
+
+    strncpy(&game->drawBuffer[scorePos.y + 1][scorePos.x], scoreBuffer, scoreSize.x);
 }
 
 void drawTermToSmallError() {
