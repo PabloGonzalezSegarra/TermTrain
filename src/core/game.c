@@ -84,8 +84,8 @@ void createGame(Game* game) {
 
     cleanBuffer(game);
 
-    createEntityHandler(&game->enemies, (Vect2){WIDTH, GROUND_LEVEL}, (Vect2){10, 0}, 1000000);
-    createEntityHandler(&game->decorators, (Vect2){WIDTH, 4}, (Vect2){2, 0}, 2000000);
+    createEntityHandler(&game->enemies, (Vect2){WIDTH, GROUND_LEVEL}, (Vect2){20, 0}, 2000000);
+    createEntityHandler(&game->decorators, (Vect2){WIDTH, 4}, (Vect2){8, 0}, 8000000);
 }
 
 void deleteGame(Game* game) {
@@ -112,18 +112,6 @@ void setFpsTarget(Game* game, uint32_t target) {
 
 bool update(Game* game) {
 
-    printf("Num ene blue: %d\n", game->enemies.numBlueprints);fflush(stdout);
-    printf("Num enemies: %d\n", game->enemies.numActiveEntities);fflush(stdout);
-    const double deltaTime = getDeltaTime(game);
-    if (game->enemies.numActiveEntities > 0) {
-        printf("Speed: %f\n", game->enemies.activeEntities[0]->speed.x);fflush(stdout);
-        printf("Positions x: %f", game->enemies.activeEntities[0]->position.x);fflush(stdout);
-        printf("a mi me vacilan: %f", (game->enemies.activeEntities[0]->speed.x * deltaTime));
-
-    }
-    if (game->decorators.numActiveEntities > 0) {
-        printf("Speed: %f\n", game->decorators.activeEntities[0]->speed.x);fflush(stdout);
-    }
     if (!game->created) {
         return false;
     }
@@ -144,7 +132,7 @@ bool update(Game* game) {
 
     updatePlayer(game);
 
-
+    const double deltaTime = getDeltaTime(game);
     handleUpdate(&game->enemies, deltaTime);
     handleUpdate(&game->decorators, deltaTime);
 
