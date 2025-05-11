@@ -13,15 +13,15 @@
 */
 
 /**
-    1- EntityHandler necesita un método free!
+    1- EntityHandler necesita un método free! ✅
     2- Hay que mejorar el sistema de entities en general:
         a. Spawns en tiempo aleatorios
         b. Ir reduciendo ligeramente el tiempo entre spawns
         c. Permitir tener ajustes en los blueprints, como dificultad, volador etc
+        d. Los enemigos mueren demasiado pronto ✅
     3- Hay que hacer un sistema que permita reiniciar el juego.
     4- Hay que revisar las colisiones
-    5- Hay que provar los decoradores
-    6- Revisar el kill entity, se mueren demasiado pronto
+    5- Hay que provar los decoradores ✅
 */
 
 void setUpPlayer(Game* game);

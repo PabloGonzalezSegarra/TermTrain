@@ -92,6 +92,10 @@ void deleteGame(Game* game) {
     if (!game->created) {
         return;
     }
+
+    deleteEntityHandler(&game->enemies);
+    deleteEntityHandler(&game->decorators);
+
     game->created = false;
 
     restoreTerm();
@@ -107,13 +111,18 @@ void setFpsTarget(Game* game, uint32_t target) {
 }
 
 bool update(Game* game) {
-    printf("Num dec blue: %d\n", game->decorators.numBlueprints);fflush(stdout);
-    printf("Num decorators: %d\n", game->decorators.numActiveEntities);fflush(stdout);
+
+    printf("Num ene blue: %d\n", game->enemies.numBlueprints);fflush(stdout);
+    printf("Num enemies: %d\n", game->enemies.numActiveEntities);fflush(stdout);
+    const double deltaTime = getDeltaTime(game);
     if (game->enemies.numActiveEntities > 0) {
-        printf("Speed: %d\n", game->enemies.activeEntities[0]->speed.x);fflush(stdout);
+        printf("Speed: %f\n", game->enemies.activeEntities[0]->speed.x);fflush(stdout);
+        printf("Positions x: %f", game->enemies.activeEntities[0]->position.x);fflush(stdout);
+        printf("a mi me vacilan: %f", (game->enemies.activeEntities[0]->speed.x * deltaTime));
+
     }
     if (game->decorators.numActiveEntities > 0) {
-        printf("Speed: %d\n", game->decorators.activeEntities[0]->speed.x);fflush(stdout);
+        printf("Speed: %f\n", game->decorators.activeEntities[0]->speed.x);fflush(stdout);
     }
     if (!game->created) {
         return false;
@@ -135,7 +144,7 @@ bool update(Game* game) {
 
     updatePlayer(game);
 
-    const double deltaTime = getDeltaTime(game);
+
     handleUpdate(&game->enemies, deltaTime);
     handleUpdate(&game->decorators, deltaTime);
 
@@ -291,6 +300,9 @@ void limitFps(Game* game) {
     if (deltaTime > basicSleepTime) {
         offset = deltaTime - basicSleepTime;
     }
+    if (basicSleepTime - offset > basicSleepTime) {
+        offset = 0;
+    }
     usleep(basicSleepTime - offset);
 }
 
@@ -307,7 +319,7 @@ void drawHeader(Game *game) {
 
     if (game->debug) {
         setColor(ANSI_CYAN);
-        printf("\tWidth: %d | HEIGHT: %d | Frame{rate, time}: {%f, %fs} | Player pos: {%d, %d} | Jump: %d | {Score, mult}: {%f, %f}\n", game->size.x, game->size.y, 1./getDeltaTime(game), getDeltaTime(game), game->player.position.x, game->player.position.y, game->player.jumpAvailable, game->ui.score, game->ui.scoreMultiplier);
+        printf("\tWidth: %f | HEIGHT: %f | Frame{rate, time}: {%f, %fs} | Player pos: {%f, %f} | Jump: %d | {Score, mult}: {%f, %f}\n", game->size.x, game->size.y, 1./getDeltaTime(game), getDeltaTime(game), game->player.position.x, game->player.position.y, game->player.jumpAvailable, game->ui.score, game->ui.scoreMultiplier);
         resetColor();
     }else {
         printf("\n");
@@ -333,18 +345,18 @@ void drawEndScreen(Game* game) {
         " \\____/\\__,_|_| |_| |_|\\___|    \\____/  \\_/ \\___|_|   "
     };
 
-    Vect2 size = {strlen(message[0]),  sizeof(message) / sizeof(message[0])};
+    Vect2 size = {strlen(message[0]),  (float)sizeof(message) / sizeof(message[0])};
     Vect2 pos = {(game->bufferSize.x - size.x) / 2,  game->bufferSize.y / 2 - size.y};
 
     for (int i = 0; i < size.y; i++) {
-        strncpy(&game->drawBuffer[pos.y + i][pos.x], message[i], size.x);
+        strncpy(&game->drawBuffer[(int)pos.y + i][(int)pos.x], message[i], size.x);
     }
 
     char shortCutsInfo[] = "Press (q) to exit.";
     Vect2 shortCutsSize = (Vect2){strlen(shortCutsInfo),  1};
     Vect2 shortCutsPos = (Vect2){(game->bufferSize.x - shortCutsSize.x) / 2,  game->bufferSize.y / 2 + shortCutsSize.y};
 
-    strncpy(&game->drawBuffer[shortCutsPos.y + 1][shortCutsPos.x], shortCutsInfo, shortCutsSize.x);
+    strncpy(&game->drawBuffer[(int)shortCutsPos.y + 1][(int)shortCutsPos.x], shortCutsInfo, shortCutsSize.x);
 
 
     char scoreBuffer[20];
@@ -352,7 +364,7 @@ void drawEndScreen(Game* game) {
     Vect2 scoreSize = (Vect2){strlen(scoreBuffer),  1};
     Vect2 scorePos = (Vect2){(game->bufferSize.x - scoreSize.x) / 2,  game->bufferSize.y / 2 + scoreSize.y + 3};
 
-    strncpy(&game->drawBuffer[scorePos.y + 1][scorePos.x], scoreBuffer, scoreSize.x);
+    strncpy(&game->drawBuffer[(int)scorePos.y + 1][(int)scorePos.x], scoreBuffer, scoreSize.x);
 }
 
 void drawTermToSmallError() {

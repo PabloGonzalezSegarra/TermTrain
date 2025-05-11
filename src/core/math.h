@@ -4,8 +4,8 @@
 #include <stdint.h>
 
 typedef struct {
-    int32_t x;
-    int32_t y;
+    float x;
+    float y;
 } Vect2;
 
 #endif // TERM_TRAIN_MATH_INCLUDE__

@@ -13,7 +13,7 @@ void drawObject(Object* object, char** buffer, Vect2 buffSize) {
                 object->position.y + i
             };
             if (pixelInBuffer(pixelPos, buffSize)) {
-                buffer[pixelPos.y][pixelPos.x] = object->texture[i][j];
+                buffer[(int)pixelPos.y][(int)pixelPos.x] = object->texture[i][j];
             }
         }
         (void)1;
