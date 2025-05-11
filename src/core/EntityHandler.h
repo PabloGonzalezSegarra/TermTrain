@@ -28,4 +28,5 @@ void createEntityHandler(EntityHandler* handler, Vect2 position, Vect2 speed, ui
 void addBlueprint(EntityHandler* handler, char** texture, Vect2 size);
 void handleUpdate(EntityHandler* handler,  double deltaTime );
 void drawEntities(EntityHandler* handler, char** buffer, Vect2 buffSize);
+void deleteEntityHandler(EntityHandler* handler);
 #endif // TERM_TRAIN_ENTITY_HANDLER_INCLUDE__

@@ -73,6 +73,7 @@ void killEntity(EntityHandler* handler) {
     for (uint32_t i = 0; i < MAX_ACTIVE_ENTITIES - 1; i++) {
         handler->activeEntities[i] = handler->activeEntities[i + 1];
     }
+    handler->activeEntities[MAX_ACTIVE_ENTITIES - 1] = NULL;
 
     handler->numActiveEntities--;
 }
@@ -88,8 +89,7 @@ void handleUpdate(EntityHandler *handler, double deltaTime ) {
 
         entity->position.x -= entity->speed.x * deltaTime;
         entity->position.y -= entity->speed.y * deltaTime;
-
-        if (entity->position.x <= 0) {
+        if (entity->position.x + entity->size.x <= 0) {
             killEntity(handler);
         }
     }
@@ -99,5 +99,14 @@ void drawEntities(EntityHandler* handler, char** buffer, Vect2 buffSize) {
 
     for (uint32_t i = 0; i < handler->numActiveEntities; i++) {
         drawObject(handler->activeEntities[i], buffer, buffSize);
+    }
+}
+
+void deleteEntityHandler(EntityHandler *handler) {
+    for (uint32_t i = 0; i < handler->numActiveEntities; i++) {
+        free(handler->activeEntities[i]);
+    }
+    for (uint32_t i = 0; i < handler->numBlueprints; i++) {
+        free(handler->blueprints[i]);
     }
 }
