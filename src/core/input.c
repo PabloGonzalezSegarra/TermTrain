@@ -48,6 +48,6 @@ bool isKeyReleased(Input* input, unsigned char key) {
     return input->previous[key] == true && input->current[key] == false;
 }
 
-bool ifKeyHolded(Input* input, unsigned char key) {
+bool isKeyHold(Input* input, unsigned char key) {
     return input->previous[key] == true && input->current[key] == true;
 }

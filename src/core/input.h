@@ -16,6 +16,6 @@ void processInput(Input* input);
 
 bool isKeyPressed(Input* input, unsigned char key);
 bool isKeyReleased(Input* input, unsigned char key);
-bool ifKeyHolded(Input* input, unsigned char key);
+bool isKeyHold(Input* input, unsigned char key);
 
 #endif // TERM_TRAIN_INPUT_INCLUDE__
