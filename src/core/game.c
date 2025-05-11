@@ -84,7 +84,7 @@ void createGame(Game* game) {
 
     cleanBuffer(game);
 
-    createEntityHandler(&game->enemies, (Vect2){WIDTH, GROUND_LEVEL}, (Vect2){20, 0}, 2000000);
+    createEntityHandler(&game->enemies, (Vect2){30, GROUND_LEVEL}, (Vect2){20, 0}, 1000000);
     createEntityHandler(&game->decorators, (Vect2){WIDTH, 4}, (Vect2){8, 0}, 8000000);
 }
 
@@ -138,9 +138,11 @@ bool update(Game* game) {
 
     updateUI(game);
 
-   // updateCollisions(game);
+    updateCollisions(game);
 
     // Draw
+
+
     updateBuffer(game);
     drawScreen(game, true, ANSI_YELLOW);
 
@@ -246,7 +248,7 @@ void updateCollisions(Game* game) {
     Object* player = &game->player;
 
     for (uint32_t i = 0; i < game->enemies.numActiveEntities; i++) {
-        if (areColliding(player, game->enemies.activeEntities[i])) {
+        if (areColliding(player, game->enemies.activeEntities[i], 1.f)) {
             game->collided = true;
             return;
         }

@@ -24,7 +24,7 @@ bool pixelInBuffer(Vect2 pixelPos, Vect2 buffSize) {
     return pixelPos.y >= 0 && pixelPos.y < buffSize.y && pixelPos.x >= 0 && pixelPos.x < buffSize.x;
 }
 
-bool areColliding(Object* object, Object* other) {
-    return object->position.x >= other->position.x &&
+bool areColliding(Object* object, Object* other, float margin) {
+    return object->position.x + object->size.x > other->position.x + margin &&
         object->position.x <= other->position.x + other->size.x && object->position.y >= other->position.y && object->position.y <= other->position.y + object->size.y;
 }

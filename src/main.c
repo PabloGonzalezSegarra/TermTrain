@@ -20,7 +20,7 @@
         c. Permitir tener ajustes en los blueprints, como dificultad, volador etc
         d. Los enemigos mueren demasiado pronto ✅
     3- Hay que hacer un sistema que permita reiniciar el juego.
-    4- Hay que revisar las colisiones
+    4- Hay que revisar las colisiones ✅
     5- Hay que provar los decoradores ✅
     6- Hay un bug en el dibujado, que desplaza al player un pixel cuando tiene un enemigo detrás.
 */

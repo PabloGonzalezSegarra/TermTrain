@@ -25,5 +25,5 @@ typedef struct {
 
 void drawObject(Object* object, char** buffer, Vect2 buffSize);
 bool pixelInBuffer(Vect2 pixelPos, Vect2 buffSize);
-bool areColliding(Object* object, Object* other);
+bool areColliding(Object* object, Object* other, float margin);
 #endif // TERM_TRAIN_CORE_INCLUDE__
