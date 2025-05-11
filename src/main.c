@@ -53,8 +53,8 @@ void setUpPlayer(Game* game) {
     const Vect2 playerSize = (Vect2){5,3};
     char ** texture = allocTexture(playerSize);
 
-    sprintf(texture[0], "U  $ ");
-    sprintf(texture[1], "#####");
+    sprintf(texture[0], "H  : ");
+    sprintf(texture[1], "C###>");
     sprintf(texture[2], " o o ");
 
     setPlayerTexture(game, texture, playerSize);
