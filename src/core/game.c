@@ -84,8 +84,8 @@ void createGame(Game* game) {
 
     cleanBuffer(game);
 
-    createEntityHandler(&game->enemies, (Vect2){30, GROUND_LEVEL}, (Vect2){20, 0}, 1000000);
-    createEntityHandler(&game->decorators, (Vect2){WIDTH, 4}, (Vect2){8, 0}, 8000000);
+    createEntityHandler(&game->enemies, (Vect2){WIDTH, GROUND_LEVEL}, (Vect2){20, 0}, 3000000);
+    createEntityHandler(&game->decorators, (Vect2){WIDTH, 7}, (Vect2){3, 0}, 8000000);
 }
 
 void deleteGame(Game* game) {
@@ -200,7 +200,9 @@ void drawScreen(Game* game, bool header, char color[]) {
         for (int32_t j = 0; j < game->bufferSize.x; j++) {
             printf("%c", game->drawBuffer[i][j]);
         }
-        printf("\n");
+        setColor(ANSI_B_PINK);
+        printf("|\n");
+        setColor(color);
     }
     resetColor();
 
@@ -266,19 +268,16 @@ void updateBuffer(Game* game) {
     cleanBuffer(game);
 
     Object* player = &game->player;
-    drawObject(player, (char**)game->drawBuffer, game->bufferSize);
-
 
     drawEntities(&game->enemies, game->drawBuffer, game->bufferSize);
     drawEntities(&game->decorators, game->drawBuffer, game->bufferSize);
-
-    // TODO
+    drawObject(player, game->drawBuffer, game->bufferSize);
     return;
 }
 
 void cleanBuffer(Game* game) {
     for (int32_t i = 0; i < game->bufferSize.y; i++) {
-        memset(game->drawBuffer[i], ' ', game->bufferSize.x);
+       memset(game->drawBuffer[i], ' ', game->bufferSize.x);
     }
 }
 

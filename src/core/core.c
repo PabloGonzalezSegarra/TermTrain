@@ -4,19 +4,19 @@
 void drawObject(Object* object, char** buffer, Vect2 buffSize) {
     for (int i = 0; i < object->size.y; i++) {
         for (int j = 0; j < object->size.x; j++) {
-            if (object->texture[i][j] == ' ') {
+            /*if (object->texture[i][j] == ' ') {
                 continue;
-            }
+            }*/
 
             Vect2 pixelPos = (Vect2) {
                 object->position.x + j,
                 object->position.y + i
             };
+
             if (pixelInBuffer(pixelPos, buffSize)) {
                 buffer[(int)pixelPos.y][(int)pixelPos.x] = object->texture[i][j];
             }
         }
-        (void)1;
     }
 }
 

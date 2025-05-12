@@ -96,7 +96,6 @@ void handleUpdate(EntityHandler *handler, double deltaTime ) {
 }
 
 void drawEntities(EntityHandler* handler, char** buffer, Vect2 buffSize) {
-
     for (uint32_t i = 0; i < handler->numActiveEntities; i++) {
         drawObject(handler->activeEntities[i], buffer, buffSize);
     }
