@@ -84,8 +84,8 @@ void createGame(Game* game) {
 
     cleanBuffer(game);
 
-    createEntityHandler(&game->enemies, (Vect2){WIDTH, GROUND_LEVEL}, (Vect2){20, 0}, 3000000);
-    createEntityHandler(&game->decorators, (Vect2){WIDTH, 7}, (Vect2){3, 0}, 8000000);
+    createEntityHandler(&game->enemies, (Vect2){WIDTH, GROUND_LEVEL}, (Vect2){20, 0}, 3000000, 1200000, (Vect2){0,0}, 0.4f, 0.008f, 3.f);
+    createEntityHandler(&game->decorators, (Vect2){WIDTH, 7}, (Vect2){3, 0}, 10000000, 10000000, (Vect2){0,3}, 0.5f, 0.f, 0.f);
 }
 
 void deleteGame(Game* game) {
@@ -141,8 +141,6 @@ bool update(Game* game) {
     updateCollisions(game);
 
     // Draw
-
-
     updateBuffer(game);
     drawScreen(game, true, ANSI_YELLOW);
 
@@ -200,9 +198,10 @@ void drawScreen(Game* game, bool header, char color[]) {
         for (int32_t j = 0; j < game->bufferSize.x; j++) {
             printf("%c", game->drawBuffer[i][j]);
         }
-        setColor(ANSI_B_PINK);
+        /*setColor(ANSI_B_PINK);
         printf("|\n");
-        setColor(color);
+        setColor(color);*/
+        printf("\n");
     }
     resetColor();
 
@@ -298,7 +297,8 @@ void limitFps(Game* game) {
 void cleanScreen() {
     (void)system("clear");
 }
-
+uint64_t prevNext = 0;
+ uint64_t valueToPrint =0;
 void drawHeader(Game *game) {
     setColor(ANSI_B_PINK);
     printf("\n\tScore: %ld\n", (uint64_t)game->ui.score);
@@ -306,10 +306,16 @@ void drawHeader(Game *game) {
 
     uint32_t separatorNum = WIDTH <= game->size.x ? WIDTH : game->size.x;
 
+   // uint64_t valueToPrint = game->enemies.nextSpawn_us;
+    if (prevNext != game->enemies.nextSpawn_us) {
+        valueToPrint = game->enemies.nextSpawn_us - prevNext;
+        prevNext = game->enemies.nextSpawn_us;
+    }
     if (game->debug) {
         setColor(ANSI_CYAN);
-        printf("\tWidth: %f | HEIGHT: %f | Frame{rate, time}: {%f, %fs} | Player pos: {%f, %f} | Jump: %d | {Score, mult}: {%f, %f}\n", game->size.x, game->size.y, 1./getDeltaTime(game), getDeltaTime(game), game->player.position.x, game->player.position.y, game->player.jumpAvailable, game->ui.score, game->ui.scoreMultiplier);
+        printf("\tWidth: %f | HEIGHT: %f | Frame{rate, time}: {%f, %fs} | Player pos: {%f, %f} | Jump: %d | {Score, mult}: {%f, %f} | Diff: %f | period: {%ld} | Next: {%ld}\n", game->size.x, game->size.y, 1./getDeltaTime(game), getDeltaTime(game), game->player.position.x, game->player.position.y, game->player.jumpAvailable, game->ui.score, game->ui.scoreMultiplier, game->enemies.currentDiff,game->enemies.period_us, valueToPrint);
         resetColor();
+
     }else {
         printf("\n");
     }

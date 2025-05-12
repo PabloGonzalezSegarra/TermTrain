@@ -23,9 +23,8 @@
 
 #define GROUND_LEVEL (BUFFER_HEIGHT - 2)
 
-#define BASE_SCORE (4)
-#define BASE_MULTIPLIER (0.01)
-
+#define BASE_SCORE (33)
+#define BASE_MULTIPLIER (0.07)
 
 typedef struct {
     Vect2 size;

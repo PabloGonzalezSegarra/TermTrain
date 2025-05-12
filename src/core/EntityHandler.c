@@ -8,16 +8,24 @@
 
 void spawnEntity(EntityHandler* handler);
 
-void createEntityHandler(EntityHandler* handler, Vect2 position, Vect2 speed, uint64_t period) {
+void createEntityHandler(EntityHandler* handler, Vect2 position, Vect2 speed, uint64_t period, uint64_t minPeriod, Vect2 posRand, float timeRand, float diffIncrease, float maxDiff) {
 
     handler->startPosition = position;
     handler->speed = speed;
-    handler->period_us = period;
 
     handler->numBlueprints = 0;
     handler->numActiveEntities = 0;
 
-    handler->lastSpawn_us = getCurrentMicroseconds();
+    handler->period_us = period;
+    handler->minPeriod_us = minPeriod;
+    handler->nextSpawn_us = getCurrentMicroseconds();
+
+    handler->posRand = posRand;
+    handler->timeRand = timeRand;
+    handler->diffIncrease = diffIncrease;
+    handler->currentDiff = 1.f;
+    handler->maxDiff = maxDiff;
+    handler->entityCounter = 0;
 
     for (uint32_t i = 0; i < MAX_BLUEPRINTS; i++) {
         handler->blueprints[i] = NULL;
@@ -52,15 +60,34 @@ void spawnEntity(EntityHandler* handler) {
     Object* blueprint = handler->blueprints[rand() % handler->numBlueprints];
     Object* entity = malloc(sizeof(Object));
 
-    entity->position = blueprint->position;
-    entity->speed = blueprint->speed;
+    if (handler->posRand.x == 0) {
+        entity->position.x = handler->startPosition.x;
+    }else{
+        const int sign = rand() % 2 == 0 ? 1 : -1;
+        const int posDiff = rand() % (int)handler->posRand.x;
+        entity->position.x = handler->startPosition.x + (sign * posDiff);
+    }
+
+    if (handler->posRand.y == 0) {
+        entity->position.y = handler->startPosition.y - blueprint->size.y;
+    }else{
+        const int sign = rand() % 2 == 0 ? 1 : -1;
+        const int posDiff = rand() % (int)handler->posRand.y;
+        entity->position.y = handler->startPosition.y + (sign * posDiff) - blueprint->size.y;
+    }
+
+    entity->speed = (Vect2) {
+        blueprint->speed.x * handler->currentDiff,
+        blueprint->speed.y * handler->currentDiff
+    };
+
     entity->size = blueprint->size;
-    entity->position = handler->startPosition;
-    entity->position.y -= blueprint->size.y;
+
     entity->texture = blueprint->texture;
 
     handler->activeEntities[handler->numActiveEntities] = entity;
     handler->numActiveEntities++;
+    handler->entityCounter++;
 }
 
 void killEntity(EntityHandler* handler) {
@@ -79,9 +106,18 @@ void killEntity(EntityHandler* handler) {
 }
 
 void handleUpdate(EntityHandler *handler, double deltaTime ) {
-    if (getCurrentMicroseconds() - handler->lastSpawn_us >= handler->period_us) {
+    const uint64_t currentTime = getCurrentMicroseconds();
+    if (currentTime >= handler->nextSpawn_us) {
         spawnEntity(handler);
-        handler->lastSpawn_us = getCurrentMicroseconds();
+
+        handler->nextSpawn_us = currentTime + handler->period_us;
+        const int sign = rand() % 2 == 0 ? 1 : -1;
+        handler->nextSpawn_us = handler->nextSpawn_us + (uint64_t)((float)sign * ((float)handler->period_us * handler->timeRand)); // TODO que es esto xD
+
+        handler->period_us -= (uint64_t)((float)handler->period_us * (1.f - handler->diffIncrease)) * 0.01f;// - handler->period_us;
+        if (handler->period_us <= handler->minPeriod_us) {
+            handler->period_us = handler->minPeriod_us;
+        }
     }
 
     for (uint32_t i = 0; i < handler->numActiveEntities; i++) {
@@ -92,6 +128,11 @@ void handleUpdate(EntityHandler *handler, double deltaTime ) {
         if (entity->position.x + entity->size.x <= 0) {
             killEntity(handler);
         }
+    }
+
+    handler->currentDiff += handler->diffIncrease * deltaTime;
+    if (handler->currentDiff > handler->maxDiff) {
+        handler->currentDiff = handler->maxDiff;
     }
 }
 
