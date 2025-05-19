@@ -1,10 +1,10 @@
-#ifndef TERM_TRAIN_ENTITY_HANDLER_INCLUDE__
-#define TERM_TRAIN_ENTITY_HANDLER_INCLUDE__
-
-
 #include <stdbool.h>
+
 #include "math.h"
 #include "core.h"
+
+#ifndef TERM_TRAIN_ENTITY_HANDLER_INCLUDE__
+#define TERM_TRAIN_ENTITY_HANDLER_INCLUDE__
 
 #define MAX_BLUEPRINTS 16
 #define MAX_ACTIVE_ENTITIES 8
@@ -38,4 +38,5 @@ void addBlueprint(EntityHandler* handler, char** texture, Vect2 size);
 void handleUpdate(EntityHandler* handler,  double deltaTime );
 void drawEntities(EntityHandler* handler, char** buffer, Vect2 buffSize);
 void deleteEntityHandler(EntityHandler* handler);
+
 #endif // TERM_TRAIN_ENTITY_HANDLER_INCLUDE__

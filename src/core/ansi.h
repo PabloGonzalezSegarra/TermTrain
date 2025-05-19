@@ -1,8 +1,9 @@
+#include <stdio.h>
+
 #ifndef TERM_TRAIN_ANSI_INCLUDE__
 #define TERM_TRAIN_ANSI_INCLUDE__
 
 //Regular text
-#include <stdio.h>
 #define ANSI_BLACK "\e[0;30m"
 #define ANSI_RED "\e[0;31m"
 #define ANSI_GREEN "\e[0;32m"
@@ -77,12 +78,7 @@
 //Reset
 #define ANSI_RESET "\e[0m"
 
-void setColor(char* color) {
-    printf("%s", color);
-}
-
-void resetColor() {
-    printf("%s", ANSI_RESET);
-}
+void setColor(char* color);
+void resetColor();
 
 #endif // TERM_TRAIN_ANSI_INCLUDE__

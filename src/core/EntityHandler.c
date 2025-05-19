@@ -115,7 +115,7 @@ void handleUpdate(EntityHandler *handler, double deltaTime ) {
         const uint64_t randomOffset = ((long)rand() % handler->period_us) * handler->timeRand;
         handler->nextSpawn_us = handler->nextSpawn_us + (uint64_t)((float)sign * randomOffset);
 
-        handler->period_us -= (uint64_t)((float)handler->period_us * (1.f - handler->diffIncrease)) * 0.01f;// - handler->period_us;
+        handler->period_us -= (uint64_t)((float)handler->period_us * (1.f - handler->diffIncrease)) * 0.01f;
         if (handler->period_us <= handler->minPeriod_us) {
             handler->period_us = handler->minPeriod_us;
         }

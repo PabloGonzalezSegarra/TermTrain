@@ -1,8 +1,9 @@
+#include <stdbool.h>
+
+#include "math.h"
+
 #ifndef TERM_TRAIN_CORE_INCLUDE__
 #define TERM_TRAIN_CORE_INCLUDE__
-
-#include <stdbool.h>
-#include "math.h"
 
 typedef struct {
     double score;
@@ -24,6 +25,7 @@ typedef struct {
 } Object;
 
 void drawObject(Object* object, char** buffer, Vect2 buffSize);
+void drawBuffer(char** buffer, Vect2 bufferSize, char color[]);
 bool pixelInBuffer(Vect2 pixelPos, Vect2 buffSize);
 bool areColliding(Object* object, Object* other, float margin);
 #endif // TERM_TRAIN_CORE_INCLUDE__

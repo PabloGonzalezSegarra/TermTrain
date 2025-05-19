@@ -1,13 +1,14 @@
-#ifndef TERM_TRAIN_SCREEN_INCLUDE__
-#define TERM_TRAIN_SCREEN_INCLUDE__
-
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+
 #include "math.h"
 #include "input.h"
 #include "EntityHandler.h"
 #include "core.h"
+
+#ifndef TERM_TRAIN_GAME_INCLUDE__
+#define TERM_TRAIN_GAME_INCLUDE__
 
 #define HEADER_HEIGHT ((uint32_t)4)
 #define HEADER_SEPARATOR "_"
@@ -62,4 +63,4 @@ void setFloorTexture(Game* game, char** texture, Vect2 size);
 void addEnemy(Game* game, char** texture, Vect2 size);
 void addDecorator(Game* game, char** texture, Vect2 size);
 
-#endif // TERM_TRAIN_SCREEN_INCLUDE__
+#endif // TERM_TRAIN_GAME_INCLUDE__

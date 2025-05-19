@@ -1,5 +1,6 @@
 #include "core.h"
 #include "math.h"
+#include "ansi.h"
 
 void drawObject(Object* object, char** buffer, Vect2 buffSize) {
     for (int i = 0; i < object->size.y; i++) {
@@ -18,6 +19,17 @@ void drawObject(Object* object, char** buffer, Vect2 buffSize) {
             }
         }
     }
+}
+
+void drawBuffer(char** buffer, Vect2 bufferSize, char color[]) {
+    setColor(color);
+    for (int32_t i = 0; i < bufferSize.y; i++) {
+        for (int32_t j = 0; j < bufferSize.x; j++) {
+            printf("%c", buffer[i][j]);
+        }
+        printf("\n");
+    }
+    resetColor();
 }
 
 bool pixelInBuffer(Vect2 pixelPos, Vect2 buffSize) {

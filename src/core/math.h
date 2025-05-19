@@ -1,7 +1,7 @@
+#include <stdint.h>
+
 #ifndef TERM_TRAIN_MATH_INCLUDE__
 #define TERM_TRAIN_MATH_INCLUDE__
-
-#include <stdint.h>
 
 typedef struct {
     float x;

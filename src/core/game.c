@@ -9,13 +9,13 @@
 #include <ncurses.h>
 #include <termios.h>
 
+#include "ansi.h"
 #include "game.h"
 #include "EntityHandler.h"
 #include "core.h"
 #include "input.h"
 #include "math.h"
 #include "time.h"
-#include "ansi.h"
 
 void drawScreen(Game* game, bool header, char color[]);
 void drawHeader(Game* game);
@@ -144,7 +144,7 @@ bool update(Game* game) {
 
     updateUI(game);
 
-    // updateCollisions(game);
+    updateCollisions(game);
 
     // Draw
     updateBuffer(game);
@@ -207,17 +207,7 @@ void drawScreen(Game* game, bool header, char color[]) {
         return;
     }
 
-    setColor(color);
-    for (int32_t i = 0; i < game->bufferSize.y; i++) {
-        for (int32_t j = 0; j < game->bufferSize.x; j++) {
-            printf("%c", game->drawBuffer[i][j]);
-        }
-        /*setColor(ANSI_B_PINK);
-        printf("|\n");
-        setColor(color);*/
-        printf("\n");
-    }
-    resetColor();
+    drawBuffer(game->drawBuffer, game->bufferSize, color);
 
     fflush(stdout);
 }
@@ -248,7 +238,7 @@ void updatePlayer(Game* game) {
 
     Vect2* playerPos = &player->position;
 
-    double deltaTime = getDeltaTime(game);
+    const double deltaTime = getDeltaTime(game);
 
     playerPos->y -= playerSpeed->y * deltaTime;
     playerSpeed->y -= GRAVITY * deltaTime;
@@ -287,7 +277,6 @@ void updateBuffer(Game* game) {
     drawEntities(&game->decorators, game->drawBuffer, game->bufferSize);
     drawObject(player, game->drawBuffer, game->bufferSize);
     drawObject(floor, game->drawBuffer, game->bufferSize);
-    return;
 }
 
 void cleanBuffer(Game* game) {
@@ -313,8 +302,7 @@ void limitFps(Game* game) {
 void cleanScreen() {
     (void)system("clear");
 }
-uint64_t prevNext = 0;
- uint64_t valueToPrint =0;
+
 void drawHeader(Game *game) {
     setColor(ANSI_B_PINK);
     printf("\n\tScore: %ld\n", (uint64_t)game->ui.score);
@@ -322,14 +310,9 @@ void drawHeader(Game *game) {
 
     uint32_t separatorNum = WIDTH <= game->size.x ? WIDTH : game->size.x;
 
-   // uint64_t valueToPrint = game->enemies.nextSpawn_us;
-    if (prevNext != game->enemies.nextSpawn_us) {
-        valueToPrint = game->enemies.nextSpawn_us - prevNext;
-        prevNext = game->enemies.nextSpawn_us;
-    }
     if (game->debug) {
         setColor(ANSI_CYAN);
-        printf("\tWidth: %f | HEIGHT: %f | Frame{rate, time}: {%f, %fs} | Player pos: {%f, %f} | Jump: %d | {Score, mult}: {%f, %f} | Diff: %f | period: {%ld} | Next: {%ld}\n", game->size.x, game->size.y, 1./getDeltaTime(game), getDeltaTime(game), game->player.position.x, game->player.position.y, game->player.jumpAvailable, game->ui.score, game->ui.scoreMultiplier, game->enemies.currentDiff,game->enemies.period_us, valueToPrint);
+        printf("\tWidth: %f | HEIGHT: %f | Frame{rate, time}: {%f, %fs} | Player pos: {%f, %f} | Jump: %d | {Score, mult}: {%f, %f} | Diff: %f | period: {%ld}\n", game->size.x, game->size.y, 1./getDeltaTime(game), getDeltaTime(game), game->player.position.x, game->player.position.y, game->player.jumpAvailable, game->ui.score, game->ui.scoreMultiplier, game->enemies.currentDiff,game->enemies.period_us);
         resetColor();
 
     }else {
@@ -369,7 +352,6 @@ void drawEndScreen(Game* game) {
 
     strncpy(&game->drawBuffer[(int)shortCutsPos.y + 1][(int)shortCutsPos.x], shortCutsInfo, shortCutsSize.x);
 
-
     char scoreBuffer[20];
     sprintf(scoreBuffer, "Score: %ld", (long)game->ui.score);
     Vect2 scoreSize = (Vect2){strlen(scoreBuffer),  1};
@@ -379,7 +361,6 @@ void drawEndScreen(Game* game) {
 }
 
 void drawTermToSmallError() {
-
     char widthText[10];
     sprintf(widthText, "%d", WIDTH);
     char HEIGHTText[10];
