@@ -73,6 +73,12 @@ void createGame(Game* game) {
     game->player.speed = (Vect2){0 ,0 };
     game->player.size = (Vect2){0 ,0 };
 
+    game->floor.jumpAvailable = false;
+    game->floor.jumpSpeed = 0;
+    game->floor.position = (Vect2) {0, BUFFER_HEIGHT};
+    game->floor.speed = (Vect2){0 ,0 };
+    game->floor.size = (Vect2){0 ,0 };
+
     game->ui.score = 0;
     game->ui.scoreMultiplier = 1.f;
 
@@ -84,7 +90,7 @@ void createGame(Game* game) {
 
     cleanBuffer(game);
 
-    createEntityHandler(&game->enemies, (Vect2){WIDTH, GROUND_LEVEL}, (Vect2){20, 0}, 3000000, 1200000, (Vect2){0,0}, 0.4f, 0.008f, 3.f);
+    createEntityHandler(&game->enemies, (Vect2){WIDTH, GROUND_LEVEL}, (Vect2){20, 0}, 3000000, 1100000, (Vect2){0,0}, 0.4f, 0.008f, 3.1f);
     createEntityHandler(&game->decorators, (Vect2){WIDTH, 7}, (Vect2){3, 0}, 10000000, 10000000, (Vect2){0,3}, 0.5f, 0.f, 0.f);
 }
 
@@ -138,7 +144,7 @@ bool update(Game* game) {
 
     updateUI(game);
 
-    updateCollisions(game);
+    // updateCollisions(game);
 
     // Draw
     updateBuffer(game);
@@ -166,6 +172,14 @@ void disableDebug(Game *game) {
 void setPlayerTexture(Game* game, char** texture, Vect2 size) {
     game->player.texture = texture;
     game->player.size = size;
+}
+
+void setFloorTexture(Game* game, char** texture, Vect2 size) {
+    game->floor.texture = texture;
+    game->floor.size = size;
+
+    game->floor.position = (Vect2) {0, BUFFER_HEIGHT - size.y};
+
 }
 
 void addEnemy(Game* game, char** texture, Vect2 size) {
@@ -267,10 +281,12 @@ void updateBuffer(Game* game) {
     cleanBuffer(game);
 
     Object* player = &game->player;
+    Object* floor = &game->floor;
 
     drawEntities(&game->enemies, game->drawBuffer, game->bufferSize);
     drawEntities(&game->decorators, game->drawBuffer, game->bufferSize);
     drawObject(player, game->drawBuffer, game->bufferSize);
+    drawObject(floor, game->drawBuffer, game->bufferSize);
     return;
 }
 

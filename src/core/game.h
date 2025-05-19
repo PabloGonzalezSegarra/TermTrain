@@ -38,6 +38,8 @@ typedef struct {
     UI ui;
     Object player;
 
+    Object floor;
+
     Input input;
 
     EntityHandler enemies;
@@ -56,6 +58,7 @@ void enableDebug(Game* game);
 void disableDebug(Game* game);
 
 void setPlayerTexture(Game* game, char** texture, Vect2 size);
+void setFloorTexture(Game* game, char** texture, Vect2 size);
 void addEnemy(Game* game, char** texture, Vect2 size);
 void addDecorator(Game* game, char** texture, Vect2 size);
 

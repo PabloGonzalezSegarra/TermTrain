@@ -21,15 +21,16 @@
         c. Permitir tener ajustes en los blueprints, como dificultad, volador etc ❌
         d. Los enemigos mueren demasiado pronto ✅
         e. Spawns en posición aleatorios ✅
-    3- Hay que hacer un sistema que permita reiniciar el juego.
+    3- Hay que hacer un sistema que permita reiniciar el juego.❌
     4- Hay que revisar las colisiones ✅
     5- Hay que provar los decoradores ✅
     6- Hay un bug en el dibujado, que desplaza al player un pixel cuando tiene un enemigo detrás. ✅
-    7. Dibujar el suelo
+    7. Dibujar el suelo ✅
     8- Bug en el periodo de aparición
 */
 
 void setUpPlayer(Game* game);
+void setUpFloor(Game* game);
 void setUpEnemies(Game* game);
 void setUpDecorators(Game* game);
 char** allocTexture(Vect2 size);
@@ -43,9 +44,10 @@ int main(int argc, char** argv){
     setFpsTarget(&game, 5);
 
     setUpPlayer(&game);
+    setUpFloor(&game);
     setUpEnemies(&game);
     setUpDecorators(&game);
-    enableDebug(&game);
+    //enableDebug(&game);
 
     while (update(&game)) {}
 
@@ -58,9 +60,22 @@ void setUpPlayer(Game* game) {
     char ** texture = allocTexture(playerSize);
     sprintf(texture[0], "H  : ");
     sprintf(texture[1], "C###>");
-    sprintf(texture[2], " o o ");
+    sprintf(texture[2], "oo oo");
     setPlayerTexture(game, texture, playerSize);
 }
+
+void setUpFloor(Game* game) {
+    const Vect2 floorSize = (Vect2){ BUFFER_WIDTH, 2 };
+    char** texture = allocTexture(floorSize);
+
+    for (int i = 0; i < floorSize.x; i++) {
+        texture[0][i] = '_';
+        texture[1][i] = '#';
+    }
+
+    setFloorTexture(game, texture, floorSize);
+}
+
 
 void setUpEnemies(Game* game) {
     // Esta forma de crear texturas.............!!##@1!!@#!#!@!!

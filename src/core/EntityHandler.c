@@ -21,7 +21,7 @@ void createEntityHandler(EntityHandler* handler, Vect2 position, Vect2 speed, ui
     handler->nextSpawn_us = getCurrentMicroseconds();
 
     handler->posRand = posRand;
-    handler->timeRand = timeRand;
+    handler->timeRand = timeRand > 1.f ? 1.f : timeRand;
     handler->diffIncrease = diffIncrease;
     handler->currentDiff = 1.f;
     handler->maxDiff = maxDiff;
@@ -112,7 +112,8 @@ void handleUpdate(EntityHandler *handler, double deltaTime ) {
 
         handler->nextSpawn_us = currentTime + handler->period_us;
         const int sign = rand() % 2 == 0 ? 1 : -1;
-        handler->nextSpawn_us = handler->nextSpawn_us + (uint64_t)((float)sign * ((float)handler->period_us * handler->timeRand)); // TODO que es esto xD
+        const uint64_t randomOffset = ((long)rand() % handler->period_us) * handler->timeRand;
+        handler->nextSpawn_us = handler->nextSpawn_us + (uint64_t)((float)sign * randomOffset);
 
         handler->period_us -= (uint64_t)((float)handler->period_us * (1.f - handler->diffIncrease)) * 0.01f;// - handler->period_us;
         if (handler->period_us <= handler->minPeriod_us) {
